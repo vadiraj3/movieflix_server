@@ -32,8 +32,8 @@ module.exports = {
 		'react/jsx-props-no-spreading': 0,
 		'no-aparse-arrays': 0,
 		'no-array-index-key': 0,
-		indent: ['error', 2, { ignoredNodes: ['JSXElement'] }],
-		'react/jsx-indent': ['error', 2],
+		indent: 'off',
+		'react/jsx-indent': 'off',
 		camelcase: 0,
 	},
 };
