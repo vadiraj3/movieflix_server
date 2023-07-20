@@ -45,7 +45,7 @@ class User {
 			firstname: Joi.string().min(3).max(30).required(),
 			lastname: Joi.string().min(3).max(30).required(),
 
-			email: Joi.string().min(5).max(50).required(),
+			email: Joi.string().email().min(5).max(50).required(),
 
 			password: Joi.string().min(5).required(),
 		}).options({ abortEarly: false });

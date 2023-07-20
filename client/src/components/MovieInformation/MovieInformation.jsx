@@ -44,6 +44,7 @@ const MovieInformation = () => {
 	const { data, error, isFetching } = useGetMovieInfoQuery(id);
 	const [open, setOpen] = useState(false);
 
+	useEffect(() => {}, []);
 	const { data: recommended, isFetching: isRecommendedFetching } =
 		useGetMovieRecommendationQuery(id);
 
@@ -70,7 +71,14 @@ const MovieInformation = () => {
 		try {
 			const favorites = await axios.post(
 				`http://localhost:3000/kfi-api/v1/user/add-to-favorites`,
-				{ movie_id: id, user_id: userId }
+				{ movie_id: id, user_id: userId },
+				{
+					headers: {
+						authorization: `Bearer ${JSON.parse(
+							localStorage.getItem('token')
+						)}`,
+					},
+				}
 			);
 		} catch (error) {
 			console.log(error);
@@ -87,7 +95,14 @@ const MovieInformation = () => {
 		try {
 			const watchlist = await axios.post(
 				`http://localhost:3000/kfi-api/v1/user/add-to-watchlisted`,
-				{ movie_id: id, user_id: userId }
+				{ movie_id: id, user_id: userId },
+				{
+					headers: {
+						authorization: `Bearer ${JSON.parse(
+							localStorage.getItem('token')
+						)}`,
+					},
+				}
 			);
 		} catch (error) {
 			console.log(error);
@@ -198,9 +213,15 @@ const MovieInformation = () => {
 											<Typography color="textPrimary" align="center">
 												{actor.firstname} {actor.lastname}
 											</Typography>
-											<Typography color="textSecondary" align="center">
-												{data?.movieCast[i]?.role}
-											</Typography>
+											{data?.movieCast.map((cast) => {
+												if (cast?.actor_id == actor?.id) {
+													return (
+														<Typography color="textSecondary" align="center">
+															{cast?.role}
+														</Typography>
+													);
+												}
+											})}
 										</Grid>
 									)
 							)
@@ -247,7 +268,9 @@ const MovieInformation = () => {
 								</Button>
 								<Button
 									onClick={addToWatchList}
-									endIcon={isMovieWatchListed ? <Remove /> : <PlusOne />}
+									endIcon={
+										watchlisted?.result?.includes(id) ? <Remove /> : <PlusOne />
+									}
 									style={{ whiteSpace: 'nowrap' }}
 								>
 									Watchlist

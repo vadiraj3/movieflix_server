@@ -10,9 +10,11 @@ const actorRouter = require('./routes/actor');
 const movieApiRouter = require('./routes/movieApi');
 const actorApiRouter = require('./routes/actorApi');
 require('express-async-errors');
+const helmet = require('helmet');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
+app.use(helmet());
 app.use(express.json());
 app.use(cors());
 

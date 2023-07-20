@@ -20,6 +20,7 @@ const FileUpload = () => {
 				'https://api.cloudinary.com/v1_1/dk01ece44/image/upload',
 				htmlFormData
 			);
+			console.log(result);
 		} catch (error) {
 			console.log(error);
 		}

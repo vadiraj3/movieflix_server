@@ -2,7 +2,16 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const kfiapi = createApi({
 	reducerPath: 'kfiapi',
-	baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/kfi-api/v1' }),
+	baseQuery: fetchBaseQuery({
+		baseUrl: 'http://localhost:3000/kfi-api/v1',
+		prepareHeaders: (headers, { getState }) => {
+			headers.set(
+				'authorization',
+				`Bearer ${JSON.parse(localStorage.getItem('token'))}`
+			);
+			return headers;
+		},
+	}),
 
 	//get Movies
 	endpoints: (builder) => ({

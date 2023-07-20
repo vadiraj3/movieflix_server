@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 import { Box, Button, Alert, useMediaQuery } from '@mui/material';
+
 import MoviesFlix from '../../assets/Moviesflix.jpg';
 import { useContext } from 'react';
 import useStyles from './styles';
 import { AuthContext } from './../../contexts/authContext';
 import { useDispatch } from 'react-redux';
 import { currentUser, userLogin, userId } from '../../features/auth';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Homepage = () => {
 	const [login, setLogin] = useState(true);
@@ -19,6 +22,7 @@ const Homepage = () => {
 	const [error, setError] = useState('');
 	const dispatch = useDispatch();
 	const isMobile = useMediaQuery('(max-width:600px)');
+	const [success, setSuccess] = useState(false);
 
 	const setLoggedIn = useContext(AuthContext);
 
@@ -32,12 +36,28 @@ const Homepage = () => {
 		}
 	}, []);
 
+	function isValidEmail(email) {
+		// Regular expression pattern for email validation
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		return emailPattern.test(email);
+	}
+
 	const handleSubmit = async () => {
 		setError(false);
 
 		if (login) {
 			if (!email || !password) {
-				return setError('Email or Password cannot be empty');
+				toast.error('Email or Password cannot be empty');
+				return;
+			}
+			if (!isValidEmail(email)) {
+				toast.error('Email format is not correct');
+				return;
+			}
+			if (password.length < 6) {
+				toast.info('Please enter a password with at least 6 characters');
+				return;
 			}
 			try {
 				const { data } = await axios.post(
@@ -45,10 +65,17 @@ const Homepage = () => {
 					{
 						email,
 						password,
+					},
+					{
+						headers: {
+							authorization:
+								'Bearer ' + JSON.parse(localStorage.getItem('token')),
+						},
 					}
 				);
 				if (data.success) {
 					const user = jwt_decode(data.token);
+
 					dispatch(userLogin(user.loggedIn));
 					dispatch(currentUser(user.name));
 					dispatch(userId(user.userId));
@@ -59,10 +86,14 @@ const Homepage = () => {
 				}
 			} catch (error) {
 				console.log(error);
+				toast.error('Invalid credentials');
+				return;
 			}
 		} else {
 			if (!email || !password || !firstname || !lastname) {
-				return setError('Fieds cannot be empty');
+				toast.error('Fieds cannot be empty');
+
+				return;
 			}
 			try {
 				const result = await axios.post(
@@ -74,18 +105,34 @@ const Homepage = () => {
 						password,
 					}
 				);
+				if (result?.data?.msg == 'Successs') {
+					localStorage.setItem('token', JSON.stringify(result?.data?.token));
+					setSuccess(true);
+				}
 			} catch (error) {
-				setError('error');
+				console.log(error);
+				if (error?.response?.data?.error?.details[0]?.message) {
+					toast.error(error.response.data.error.details[0].message);
+				} else {
+					toast.error('Something went wrong please try again later');
+				}
 			}
 		}
 	};
 
-	const handleMouseEnter = () => {
-		// if (register) {
-		// 	if (!email || !password) {
-		// 		style == 'visible' ? setStyle('hidden') : setStyle('visible');
-		// 	}
-		// }
+	const handleRegister = () => {
+		setLogin(false);
+		setSuccess(false);
+		setFirstname('');
+		setLastname('');
+		setEmail('');
+		setPassword('');
+	};
+
+	const handleLogin = () => {
+		setLogin(true);
+		setEmail('');
+		setPassword('');
 	};
 
 	const classes = useStyles();
@@ -97,7 +144,7 @@ const Homepage = () => {
 			}}
 		>
 			<Box className={classes.navbar}>
-				<div>
+				<div onClick={handleRegister}>
 					<img className={classes.logo} src={MoviesFlix} />
 				</div>
 
@@ -106,7 +153,7 @@ const Homepage = () => {
 						size="small"
 						variant="outlined"
 						sx={{ color: 'white', border: '1px solid white' }}
-						onClick={() => setLogin(true)}
+						onClick={handleLogin}
 					>
 						Sign In
 					</Button>
@@ -114,7 +161,7 @@ const Homepage = () => {
 					<Button
 						size="small"
 						variant="outlined"
-						onClick={() => setLogin(false)}
+						onClick={handleRegister}
 						sx={{ color: 'white', border: '1px solid white' }}
 					>
 						Register
@@ -158,9 +205,7 @@ const Homepage = () => {
 						<div>
 							<button
 								className={classes.button}
-								onMouseOver={handleMouseEnter}
 								style={{ visibility: style, marginLeft: '15px' }}
-								onMouseLeave={handleMouseEnter}
 								onClick={handleSubmit}
 							>
 								Submit
@@ -218,11 +263,27 @@ const Homepage = () => {
 								<Alert severity="error">{error}</Alert>
 							</div>
 						)}
+						{success && (
+							<div>
+								<Alert
+									severity="success"
+									style={{ display: 'flex', alignItems: 'center' }}
+								>
+									You've Successfully Registered !
+									<Button
+										sx={{ ml: 2 }}
+										size="small"
+										variant="outlined"
+										onClick={handleLogin}
+									>
+										Log in
+									</Button>
+								</Alert>
+							</div>
+						)}
 						<div>
 							<button
 								className={classes.button}
-								onMouseOver={handleMouseEnter}
-								onMouseLeave={handleMouseEnter}
 								onClick={handleSubmit}
 								style={{ marginLeft: '15px' }}
 							>

@@ -14,7 +14,7 @@ const register = async (req, res) => {
 	req.body.favorites = favorites;
 	req.body.watchlisted = watchlisted;
 	if (response.error) {
-		console.log(response.error.details);
+		res.status(StatusCodes.BAD_REQUEST).json({ error: response.error });
 	} else {
 		const { userId, username } = await User.createUser(req.body);
 		const token = User.createJWT(userId, username);

@@ -7,6 +7,7 @@ import Homepage from './Homepage/Homepage';
 import { AuthContext } from '../contexts/authContext';
 import { useSelector } from 'react-redux';
 import FileUpload from './FileUpload';
+import ActorUpload from './ActorUpload';
 
 const App = () => {
 	const classes = useStyles();
@@ -25,6 +26,8 @@ const App = () => {
 						<div className={classes.toolbar} />
 						<Routes>
 							<Route path="/" element={<Movies />} />{' '}
+							<Route path="/actor-upload" element={<ActorUpload />} />{' '}
+							{/* <Route path="/" element={<Testing />} /> */}
 							<Route path="/file" element={<FileUpload />} />{' '}
 							<Route path="/actor/:id" element={<Actors />} />{' '}
 							<Route
