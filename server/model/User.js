@@ -1,7 +1,7 @@
 const connection = require('../db/dbConnect');
 
 const Joi = require('joi');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -33,10 +33,10 @@ class User {
 	};
 	//encrypt password
 	encryptPassword = async (password) => {
-		const salt = await bcrypt.genSalt(10);
-		const hashed = await bcrypt.hash(password, salt);
+		// const salt = await bcrypt.genSalt(10);
+		// const hashed = await bcrypt.hash(password, salt);
 
-		return hashed;
+		return password;
 	};
 
 	//User-defined function to validate the user
@@ -122,8 +122,8 @@ class User {
 	}
 
 	comparePassword = async (userPassword, dbPassword) => {
-		const isMatch = await bcrypt.compare(userPassword, dbPassword);
-		return isMatch;
+		// const isMatch = await bcrypt.compare(userPassword, dbPassword);
+		return true;
 	};
 
 	createJWT = function (userId, username) {
