@@ -28,12 +28,20 @@ const PORT = process.env.PORT || 3000;
 
 const start = () => {
 	try {
-		dbConnect.connect();
-		app.listen(PORT, () => {
-			console.log('server running');
+		dbConnect.getConnection((err, connection) => {
+			if (err) {
+				console.error('Error connecting to the database:', err);
+				// Handle connection error
+			} else {
+				console.log('Connected to the database!');
+				app.listen(PORT, () => {
+					console.log('Server running and Database connected Successfully');
+				});
+				connection.release();
+			}
 		});
 	} catch (error) {
-		console.log(error);
+		console.log(error.message);
 	}
 };
 
